@@ -24,19 +24,18 @@ exports.addOPDPatientData = async (req, res) => {
     
     const patNo = await getPatientPosition(patientId);
 
-    // Get OPD's position (opdNo) in the collection
-    //const opds = await OPD.find().sort({ _id: 1 });
+   
     const opdNo = await getOpdPosition(opdId);
 
-    // Combine first name and last name for fullName
+    
     const fullName = `${patient.firstName} ${patient.lastName}`;
 
     if (patient.sex !== opd.sex) {
       return res.status(400).send(`Patient's sex (${patient.sex}) does not match OPD's required sex (${opd.sex})`);
     }
 
-    // Check if patient's age fits within the OPD's age limit (assuming OPD has minAge and maxAge fields)
-    if (patient.age < opd.minAge || patient.age > opd.maxAge) {
+    
+    if (patient.age > opd.age) {
       return res.status(400).send(`Patient's age (${patient.age}) is outside the allowed range for OPD (${opd.minAge}-${opd.maxAge})`);
     }
     
@@ -67,13 +66,13 @@ exports.addOPDPatientData = async (req, res) => {
 
 const getPatientPosition = async (patientId) => {
   try {
-    // Get all patients without sorting
-    const allPatients = await Patient.find(); // No sort applied
+    
+    const allPatients = await Patient.find(); 
 
-    // Find the index of the patient by ID
+   
     const position = allPatients.findIndex(patient => patient._id.toString() === patientId.toString());
 
-    // Return 1-based index if found, or null if not found
+    
     return position !== -1 ? position + 1 : null;
   } catch (error) {
     console.log('Error in getting patient position:', error);
@@ -83,13 +82,13 @@ const getPatientPosition = async (patientId) => {
 
 const getOpdPosition = async (opdId) => {
   try {
-    // Get all OPDs without sorting
+    
     const allOpds = await OPD.find(); // No sort applied
 
-    // Find the index of the OPD record by ID
+   
     const position = allOpds.findIndex(opd => opd._id.toString() === opdId.toString());
 
-    // Return 1-based index if found, or null if not found
+    
     return position !== -1 ? position + 1 : null;
   } catch (error) {
     console.log('Error in getting OPD position:', error);
